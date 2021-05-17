@@ -1,0 +1,183 @@
+syntax = "proto3";
+package events;
+option java_package = "proto.events";
+option java_outer_classname = "EventsProto";
+
+enum EventType {
+    SPIN = 0;
+    SPIN_WIN = 1;
+    BET = 2;
+    BET_WIN = 3;
+    BET_CANCEL = 4;
+    BET_UPDATE = 5;
+
+    FIRST_REFILL_REQUEST = 100;
+    FIRST_REFILL_SUCCESS = 101;
+    REFILL_REQUEST = 102;
+    REFILL_SUCCESS = 103;
+    REFILL_COMMISSION = 104;
+
+    WITHDRAWAL_HOLD = 200;
+    WITHDRAWAL_SUCCESS = 201;
+    WITHDRAWAL_REJECT = 202;
+    WITHDRAWAL_FAILED = 203;
+    WITHDRAWAL_COMMISSION = 204;
+
+    BONUS_REQUEST = 300;
+    BONUS_CONFIRM = 301;
+    BONUS_DECLINE = 302;
+    BONUS_WAGERING = 303;
+    TRY_ACTIVATE_BONUS_CODE = 304;
+
+    HIT = 400;
+    SITE_ACTION = 402; // TODO
+    FIRST_HIT = 403;
+
+    REGISTRATION_BY_EMAIL = 500;
+    REGISTRATION_BY_PHONE = 501;
+    REGISTRATION_BY_EMAIL_CONFIRM = 502;
+    REGISTRATION_BY_PHONE_CONFIRM = 503;
+    GUEST = 504; // TODO
+
+    USER_LOGIN = 510;
+    USER_LOGOUT = 511;
+
+    REGISTRATION_BY_API = 520;
+    REGISTRATION_BY_API_FIRSTLOGIN = 521;
+
+    JACKPOT_PARTICIPATION = 600;
+    JACKPOT_WIN = 601; // TODO
+
+    CHANGE_USER_OPT = 700; // TODO
+    CHANGE_USER_STATE = 701; // TODO
+
+    ADMIN_CHANGE_USER_OPT = 702; // TODO
+    ADMIN_CHANGE_USER_STATE = 703; // TODO
+
+    SUPPORT_REQUEST = 800; // TODO
+}
+
+message UserHost {
+    uint64 host_id     = 1;
+    string ip          = 2;
+    string fingerprint = 3;
+}
+
+message RefInfo {
+    string ref          = 1;
+    string query_string = 2;
+}
+
+message FieldValue {
+    oneof value {
+        uint64 uint_value = 1;
+        string str_value  = 2;
+        bool   bool_value = 3;
+        bytes  blob_value = 4;
+    }
+}
+
+message FieldType {
+    enum Type {
+        UINT    = 0;
+        STRING  = 1;
+        BOOLEAN = 2;
+        BLOB    = 3;
+    }
+    uint64 id   = 1;
+    string name = 2;
+    Type   type = 3;
+}
+
+message UserFieldChange {
+    uint64     change_id  = 1;
+    FieldType  type       = 2;
+    FieldValue prev_value = 3;
+    FieldValue new_value  = 4;
+}
+
+message UserField {
+    FieldType  type  = 1;
+    FieldValue value = 2;
+}
+
+message BalanceInfo {
+    uint64 currency_id = 1;
+    uint64 available = 2;
+    uint64 hold = 3;
+    uint64 id = 4;
+}
+
+message User {
+    uint64 id = 1;
+
+    repeated UserField opts  = 3;
+    repeated UserField state = 4;
+
+    repeated BalanceInfo balances_before = 5;
+    repeated BalanceInfo balances_after  = 6;
+}
+
+message UserSession {
+    string id          = 1;
+    string device      = 2;
+    string country     = 3;
+    string fingerprint = 4;
+    string user_ip     = 5;
+}
+
+message JackpotState {
+    string id        = 1;
+    uint64 primary   = 2; // multiplied by 10^8
+    uint64 secondary = 3; // multiplied by 10^8
+    uint64 currency  = 4;
+}
+
+message JackpotParticipationInfo {
+    string updated_jackpot_id = 1;
+
+    uint64 primary_part   = 2;  // multiplied by 10^8
+    uint64 secondary_part = 3;  // multiplied by 10^8
+    uint64 currency       = 4;
+
+    repeated JackpotState before = 5;
+    repeated JackpotState after  = 6;
+}
+
+message AppEvent {
+    EventType type          = 1;
+    uint64    stamp         = 2;
+
+    string    site_uuid     = 3;
+    uint64    account_id    = 4;
+    RefInfo   ref           = 5;
+
+    User      user          = 6;
+    UserHost  host          = 7;
+
+    string    bonus_id      = 8;
+    string    bonus_code    = 21;
+
+    string    game_id       = 9;
+
+    string    provider      = 10;
+
+    uint64    currency      = 11;
+    uint64    amount        = 12;
+
+    string    site_action   = 13;
+
+    UserFieldChange user_opt      = 14;
+    UserFieldChange user_state    = 15;
+
+    string    operation_id  = 16;
+    string    billing_id    = 17;
+    string    raw_billing_data  = 23;
+
+    map<string, string> site_action_headers = 18;
+    UserSession         session             = 19;
+
+    JackpotParticipationInfo jackpot_participation = 20;
+
+    string    uuid = 22;
+}

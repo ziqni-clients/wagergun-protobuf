@@ -1,0 +1,170 @@
+syntax = "proto3";
+package site;
+option java_package = "proto.site";
+option java_outer_classname = "SiteProto";
+
+import "games.proto";
+import "commons.proto";
+import "seo.proto";
+
+message LanguageInfo {
+    string title  = 1;
+    string code   = 2;
+    string locale = 3;
+}
+
+message GameMenuEntry {
+    enum GamesSorting {
+        POPULARITY = 0;
+    }
+
+    string              id             = 1; // used to differentiate rules on client
+    map<string, string> name           = 2;
+    repeated string     tags_include   = 3;
+    GamesSorting        sort           = 4;
+    double              min_popularity = 5;
+    uint32              limit          = 6;
+    repeated GameMenuEntry children    = 7;
+}
+
+message JackpotProto {
+    uint64 value    = 1;
+    string name     = 2;
+    uint64 currency = 3;
+    string ref      = 4;
+}
+
+message JackpotWinProto {
+    JackpotProto jackpot = 1;
+    string user          = 2;
+    uint64 user_id       = 3;
+    string game_id       = 4;
+}
+
+message WinInfoProto {
+    uint64 value       = 1;
+    uint64 currency_id = 2;
+    uint32 timestamp   = 3;
+    string game_id     = 4;
+    string user        = 5;
+}
+
+message CountryInfo {
+    string code       = 1;
+    string name       = 2;
+    uint32 phone_code = 3;
+}
+
+message CountriesInfo {
+    repeated CountryInfo countries = 1;
+    string   default_country       = 2;
+}
+
+message StaticPageRequest {
+    string url = 1;
+}
+
+message StaticPageResponse {
+    bool   found   = 1;
+    string content = 2;
+}
+
+message MenuItem {
+    string id  = 1;
+    string url = 2;
+    map<string, string> name = 3;
+}
+
+message MenuGroup {
+    map<string, string> name  = 1;
+    repeated MenuItem   items = 2;
+}
+
+message LicenseInfo {
+    string logo = 1;
+    string url  = 2;
+}
+
+message SiteConfigRequest {
+    string              referrer     = 1;
+    map<string, string> params       = 2;
+    string              query_string = 3;
+}
+
+message SocialNetwork {
+    string id        = 1;
+    string login_url = 2;
+}
+
+message SiteCurrencies {
+    repeated commons.Currency supported = 1;
+    uint64 default_currency_id = 3;
+}
+
+message UserLevelsInfo {
+    message UserLevelInfo {
+        uint64              level = 1;
+        map<string, string> name  = 2;
+    }
+    repeated UserLevelInfo levels = 1;
+}
+
+message TrackerConfig {
+    enum TrackerType {
+      GOOGLE_ANALYTICS = 0;
+      YANDEX_METRIC    = 1;
+    }
+    TrackerType type        = 1;
+    string      tracking_id = 2;
+}
+
+message DigitainSportSettings {
+    string server = 1;
+}
+message SportSettings {
+    oneof sports {
+        DigitainSportSettings digitain = 1;
+    }
+}
+
+message UserFieldDescription {
+    string name = 1;
+    string type = 2;
+    bool required = 3;
+}
+
+enum UserRegisterMode {
+    PASSWORD_REQUIRED = 0;
+    PASSWORD_GENERATED = 1;
+}
+
+message SiteConfigResponse {
+    repeated LanguageInfo     languages        = 1;
+    repeated games.Game       games            = 2;
+    SiteCurrencies            currencies       = 3;
+    repeated GameMenuEntry    game_menu        = 4;
+    repeated MenuItem         top_menu         = 5;
+    repeated MenuGroup        bottom_menu      = 6;
+    repeated LicenseInfo      licenses         = 7;
+    repeated SocialNetwork    social_networks  = 9;
+    CountriesInfo             countries        = 10;
+    UserLevelsInfo            user_levels      = 11;
+    map<string, string>       translations     = 12;
+
+    map<string, seo.PageSeoData> seo           = 15;
+    string                    login_type       = 16;
+    SportSettings             sport_settings   = 17;
+
+    string                    default_language = 18;
+    repeated UserFieldDescription user_fields  = 19;
+    repeated UserRegisterMode user_register_modes = 20;
+    bool allow_generated_login                 = 300;
+}
+
+message LastWinsRequest {
+    string game_id  = 1;
+}
+
+message LastWinsResponse {
+    repeated WinInfoProto entries = 1;
+}

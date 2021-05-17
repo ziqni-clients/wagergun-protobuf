@@ -1,0 +1,15 @@
+syntax = "proto3";
+package seo;
+option java_package = "proto.seo";
+option java_outer_classname = "SeoProto";
+
+message PageSeoData {
+  message PageSeoTag {
+    string              tag   = 1;
+    map<string, string> value = 2;
+  }
+
+  map<string, string> title       = 1;
+  map<string, string> description = 2;
+  repeated PageSeoTag tags        = 3;
+}

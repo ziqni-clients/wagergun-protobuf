@@ -1,0 +1,60 @@
+syntax = "proto3";
+package games;
+option java_package = "proto.games";
+option java_outer_classname = "GamesProto";
+
+import "commons.proto";
+import "seo.proto";
+
+message IFrameInfo {
+    string src = 1;
+    string initFunction = 2;
+    bool setLocation = 3;
+}
+message DIVInfo {
+    repeated string scriptPath = 1;
+    string initFunction = 2;
+    string rawHTML = 3;
+}
+
+message LaunchMethod {
+    oneof method {
+        IFrameInfo iframe = 1;
+        DIVInfo div = 2;
+    }
+    repeated commons.DeviceCapabilities capabilities = 3;
+    repeated commons.DeviceType         devices      = 4;
+}
+
+message Game {
+    string id = 1;
+    repeated LaunchMethod launchMethod = 3;
+    repeated string currencies = 4;
+    map<string, string> name = 5; // by language
+    map<string, string> desc = 6; // by language
+    map<string, commons.ImageCollection> icon = 7; // by language
+    repeated string tags = 8;
+    float popularity24h = 9; // [0-1] 0 - not popular, 1 - popular
+
+    seo.PageSeoData seo = 10;
+
+    string source_id = 11;
+    string type = 12;
+
+    uint64 sorting_index = 13;
+
+    repeated commons.DeviceCapabilities capabilities = 14;
+    repeated commons.DeviceType         devices      = 15;
+    string provider = 16;
+}
+
+message GameEmbedRequest {
+    string id = 1;
+    commons.DeviceType device = 2;
+    repeated commons.DeviceCapabilities capabilities = 3;
+    bool no_logo = 4;
+}
+
+message GameEmbedResponse {
+    LaunchMethod launchMethod = 1;
+}

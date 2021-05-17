@@ -1,0 +1,44 @@
+syntax = "proto3";
+package commons;
+option java_package = "proto.commons";
+option java_outer_classname = "CommonsProto";
+
+enum ImageType {
+    it_menu   = 0;
+    it_banner = 1;
+}
+enum DeviceType {
+    dt_mobile  = 0;
+    dt_desktop = 1;
+    dt_iphone7 = 2;
+}
+enum DeviceCapabilities {
+    dc_mouse       = 0;
+    dc_keyboard    = 1;
+    dc_touchscreen = 2;
+    dc_html5full   = 3;
+    dc_flashplayer = 4;
+}
+
+message Image {
+    uint64   width                 = 1;
+    uint64   height                = 2;
+    string   src                   = 3;
+    repeated ImageType iType  = 4;
+    repeated DeviceType dType = 5;
+}
+
+message ImageCollection {
+    repeated Image images = 1;
+}
+
+message Currency {
+    uint64 id = 1;
+    string code = 2;
+    string format = 3;
+    string logo_url = 4;
+    uint32 denomination = 5;
+    bool   block_refill = 6;
+    bool   is_fiat      = 7;
+    double spin_denomination = 8;
+}
